@@ -14,7 +14,6 @@
  * language governing permissions and limitations under the License.
  */
 package org.savantbuild.plugin.dep.idea
-import org.savantbuild.dep.DependencyService
 import org.savantbuild.dep.domain.*
 import org.savantbuild.dep.workflow.FetchWorkflow
 import org.savantbuild.dep.workflow.PublishWorkflow
@@ -22,7 +21,6 @@ import org.savantbuild.dep.workflow.Workflow
 import org.savantbuild.dep.workflow.process.CacheProcess
 import org.savantbuild.domain.Project
 import org.savantbuild.io.FileTools
-import org.savantbuild.lang.Classpath
 import org.savantbuild.output.Output
 import org.savantbuild.output.SystemOutOutput
 import org.testng.annotations.BeforeMethod
@@ -34,9 +32,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 import static org.testng.Assert.assertEquals
-import static org.testng.Assert.assertTrue
 /**
- * Tests the groovy plugin.
+ * Tests the IDEA plugin.
  *
  * @author Brian Pontarelli
  */
@@ -53,18 +50,22 @@ class IDEAPluginTest {
   public static void beforeSuite() {
     projectDir = Paths.get("")
     if (!Files.isRegularFile(projectDir.resolve("LICENSE"))) {
-      projectDir = Paths.get("../dependency-plugin")
+      projectDir = Paths.get("../idea-plugin")
     }
   }
 
   @BeforeMethod
   public void beforeMethod() {
-    output = new SystemOutOutput(true)
-//    output.enableDebug()
+    FileTools.prune(projectDir.resolve("build/test"))
 
-    project = new Project(projectDir, output)
+    output = new SystemOutOutput(true)
+    output.enableDebug()
+
+    def path = projectDir.resolve("build/test")
+    Files.createDirectories(path)
+    project = new Project(path, output)
     project.group = "org.savantbuild.test"
-    project.name = "dependency-plugin-test"
+    project.name = "idea-plugin-test"
     project.version = new Version("1.0")
     project.license = License.Apachev2
 
@@ -73,7 +74,7 @@ class IDEAPluginTest {
             new Dependency("org.savantbuild.test:multiple-versions:1.0.0", false),
             new Dependency("org.savantbuild.test:multiple-versions-different-dependencies:1.0.0", false)
         ),
-        new DependencyGroup("run", true,
+        new DependencyGroup("runtime", true,
             new Dependency("org.savantbuild.test:intermediate:1.0.0", false)
         )
     );
@@ -90,60 +91,28 @@ class IDEAPluginTest {
   }
 
   @Test
-  public void classpathNoClosure() throws Exception {
-    Classpath classpath = plugin.classpath(new DependencyService.ResolveConfiguration()
-        .with("compile", new DependencyService.ResolveConfiguration.TypeResolveConfiguration(true, true))
-    )
+  public void iml() throws Exception {
+    def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
+    Files.copy(projectDir.resolve("src/test/resources/test.iml"), imlFile)
 
-    assertEquals(classpath.toString(),
-        "${projectDir.resolve("src/test/repository/org/savantbuild/test/multiple-versions/1.1.0/multiple-versions-1.1.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/leaf/1.0.0/leaf1-1.0.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/integration-build/2.1.1-{integration}/integration-build-2.1.1-{integration}.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/multiple-versions-different-dependencies/1.1.0/multiple-versions-different-dependencies-1.1.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/leaf1/1.0.0/leaf1-1.0.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/leaf2/1.0.0/leaf2-1.0.0.jar").toAbsolutePath()}"
-    )
+    plugin.iml()
+
+    String actual = new String(Files.readAllBytes(imlFile))
+    String expected = new String(Files.readAllBytes(projectDir.resolve("src/test/resources/expected.iml")))
+    assertEquals(actual, expected)
   }
 
   @Test
-  public void classpathWithClosure() throws Exception {
-    Classpath classpath = plugin.classpath(new DependencyService.ResolveConfiguration()
-        .with("compile", new DependencyService.ResolveConfiguration.TypeResolveConfiguration(true, true))
-    ) {
-      path "foo.jar"
-    }
+  public void imlModule() throws Exception {
+    def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
+    Files.copy(projectDir.resolve("src/test/resources/test.iml"), imlFile)
 
-    assertEquals(classpath.toString(),
-        "${projectDir.resolve("src/test/repository/org/savantbuild/test/multiple-versions/1.1.0/multiple-versions-1.1.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/leaf/1.0.0/leaf1-1.0.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/integration-build/2.1.1-{integration}/integration-build-2.1.1-{integration}.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/multiple-versions-different-dependencies/1.1.0/multiple-versions-different-dependencies-1.1.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/leaf1/1.0.0/leaf1-1.0.0.jar").toAbsolutePath()}:" +
-            "${projectDir.resolve("src/test/repository/org/savantbuild/test/leaf2/1.0.0/leaf2-1.0.0.jar").toAbsolutePath()}:" +
-            "foo.jar"
-    )
-  }
+    plugin.settings.moduleMap.put("org.savantbuild.test:leaf2:1.0.0", "leaf2-module")
 
-  @Test
-  public void integrate() throws Exception {
-    FileTools.prune(projectDir.resolve("build/test/integration"));
+    plugin.iml()
 
-    project.publications.add("main",
-        new Publication(new Artifact("group:name:name:1.1.1:jar", License.BSD),
-            new ArtifactMetaData(null, License.BSD), projectDir.resolve("LICENSE"), projectDir.resolve("README.md"))
-    );
-    project.workflow = new Workflow(
-        new FetchWorkflow(output),
-        new PublishWorkflow(new CacheProcess(output, projectDir.resolve("build/test/integration").toString()))
-    );
-
-    plugin.integrate();
-
-    Path integrationFile = projectDir.resolve("build/test/integration/group/name/1.1.1-{integration}/name-1.1.1-{integration}.jar");
-    Path integrationSourceFile = projectDir.resolve("build/test/integration/group/name/1.1.1-{integration}/name-1.1.1-{integration}-src.jar");
-    assertTrue(Files.isRegularFile(integrationFile));
-    assertTrue(Files.isRegularFile(integrationSourceFile));
-    assertEquals(Files.readAllBytes(integrationFile), Files.readAllBytes(projectDir.resolve("LICENSE")));
-    assertEquals(Files.readAllBytes(integrationSourceFile), Files.readAllBytes(projectDir.resolve("README.md")));
+    String actual = new String(Files.readAllBytes(imlFile))
+    String expected = new String(Files.readAllBytes(projectDir.resolve("src/test/resources/expected-module.iml")))
+    assertEquals(actual, expected)
   }
 }
