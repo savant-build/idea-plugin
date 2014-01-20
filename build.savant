@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
  */
-project(group: "org.savantbuild.plugin", name: "dependency", version: "0.1.0", license: "Apachev2") {
+project(group: "org.savantbuild.plugin", name: "idea", version: "0.1.0", license: "Apachev2") {
   workflow {
     standard()
   }
@@ -23,7 +23,9 @@ project(group: "org.savantbuild.plugin", name: "dependency", version: "0.1.0", l
       dependency(id: "org.savantbuild:savant-core:0.1.0-{integration}")
       dependency(id: "org.savantbuild:savant-dependency-management:0.1.0-{integration}")
       dependency(id: "org.savantbuild:savant-utils:0.1.0-{integration}")
-      dependency(id: "org.savantbuildplugin:dependency:0.1.0-{integration}")
+    }
+    group(type: "compile") {
+      dependency(id: "org.savantbuild.plugin:dependency:0.1.0-{integration}")
     }
     group(type: "test-compile") {
       dependency(id: "org.testng:testng:6.8.7")
