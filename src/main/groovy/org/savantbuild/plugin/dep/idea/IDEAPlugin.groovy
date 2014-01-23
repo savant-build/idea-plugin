@@ -74,8 +74,11 @@ class IDEAPlugin extends BaseGroovyPlugin {
     // Add the libraries
     String userHome = System.getProperty("user.home")
     Set<ResolvedArtifact> addedToIML = new HashSet<>()
-    settings.resolveConfigurationMap.each { scope, resolveConfiguration ->
-      ResolvedArtifactGraph graph = dependencyPlugin.resolve(resolveConfiguration)
+    settings.dependenciesMap.each { scope, dependencySet ->
+      ResolvedArtifactGraph graph = dependencyPlugin.resolve {
+        dependencySet.each { deps -> dependencies(deps) }
+      }
+
       if (graph.size() > 0) {
         graph.traverse(graph.root, false, { origin, destination, edge, depth ->
           // If we already added the artifact, we can skip it and keep traversing because this group could be transitive

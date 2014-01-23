@@ -14,10 +14,6 @@
  * language governing permissions and limitations under the License.
  */
 package org.savantbuild.plugin.dep.idea
-
-import org.savantbuild.dep.DependencyService.ResolveConfiguration
-import org.savantbuild.dep.DependencyService.ResolveConfiguration.TypeResolveConfiguration
-
 /**
  * Settings for the IDEA plugin.
  *
@@ -25,23 +21,39 @@ import org.savantbuild.dep.DependencyService.ResolveConfiguration.TypeResolveCon
  */
 class IDEASettings {
   /**
-   * ResolveConfiguration map. This maps IDEA scopes to ResolveConfigurations. These are used to update the .iml file
+   * Dependencies map. This maps IDEA scopes to Dependency sets. These are used to update the .iml file
    * based on the project's dependencies. The default configuration is:
    *
    * <pre>
-   *   "PROVIDED": new ResolveConfiguration().with("provided", new TypeResolveConfiguration(true, false)),
-   *   "RUNTIME": new ResolveConfiguration().with("runtime", new TypeResolveConfiguration(true, false)),
-   *   "COMPILE": new ResolveConfiguration().with("compile", new TypeResolveConfiguration(true, false)),
-   *   "TEST": new ResolveConfiguration().with("test-compile", new TypeResolveConfiguration(true, false))
-   *                                     .with("test-runtime", new TypeResolveConfiguration(true, false))
+   *   "PROVIDED": [
+   *       [group: "provided", transitive: true, fetchSource: true, transitiveGroups: ["provided", "compile", "runtime"]]
+   *   ],
+   *   "COMPILE": [
+   *       [group: "provided", transitive: false, fetchSource: true]
+   *   ],
+   *   "RUNTIME": [
+   *       [group: "runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
+   *   ],
+   *   "TEST": [
+   *       [group: "test-compile", transitive: false, fetchSource: true],
+   *       [group: "test-runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
+   *   ]
    * </pre>
    */
-  Map<String, ResolveConfiguration> resolveConfigurationMap = [
-      "PROVIDED": new ResolveConfiguration().with("provided", new TypeResolveConfiguration(true, "provided", "compile", "runtime")),
-      "COMPILE": new ResolveConfiguration().with("compile", new TypeResolveConfiguration(true, false)),
-      "RUNTIME": new ResolveConfiguration().with("runtime", new TypeResolveConfiguration(true, "compile", "runtime")),
-      "TEST": new ResolveConfiguration().with("test-compile", new TypeResolveConfiguration(true, false))
-                                        .with("test-runtime", new TypeResolveConfiguration(true, "compile", "runtime"))
+  Map<String, List<Map<String, Object>>> dependenciesMap = [
+      "PROVIDED": [
+          [group: "provided", transitive: true, fetchSource: true, transitiveGroups: ["provided", "compile", "runtime"]]
+      ],
+      "COMPILE": [
+          [group: "compile", transitive: false, fetchSource: true]
+      ],
+      "RUNTIME": [
+          [group: "runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
+      ],
+      "TEST": [
+          [group: "test-compile", transitive: false, fetchSource: true],
+          [group: "test-runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
+      ]
   ]
 
   /**

@@ -14,6 +14,7 @@
  * language governing permissions and limitations under the License.
  */
 package org.savantbuild.plugin.dep.idea
+
 import org.savantbuild.dep.domain.*
 import org.savantbuild.dep.workflow.FetchWorkflow
 import org.savantbuild.dep.workflow.PublishWorkflow
@@ -32,6 +33,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 import static org.testng.Assert.assertEquals
+
 /**
  * Tests the IDEA plugin.
  *
