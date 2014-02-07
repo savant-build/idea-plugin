@@ -33,11 +33,12 @@ import java.nio.file.Path
  * @author Brian Pontarelli
  */
 class IDEAPlugin extends BaseGroovyPlugin {
-  IDEASettings settings = new IDEASettings()
+  IDEASettings settings
   DependencyPlugin dependencyPlugin
 
   IDEAPlugin(Project project, Output output) {
     super(project, output)
+    settings = new IDEASettings(project)
     dependencyPlugin = new DependencyPlugin(project, output)
   }
 
@@ -48,10 +49,12 @@ class IDEAPlugin extends BaseGroovyPlugin {
    * @param closure The closure.
    */
   void iml(Closure closure = null) {
-    Path imlFile = project.directory.resolve(project.name + ".iml")
+    Path imlFile = project.directory.resolve(settings.imlFile)
     if (!Files.isRegularFile(imlFile) || !Files.isReadable(imlFile) || !Files.isWritable(imlFile)) {
       fail("IntelliJ IDEA module file [${imlFile}] doesn't exist or isn't readable and writable")
     }
+
+    output.info("Updating the project IML file [${imlFile}]")
 
     Node root = new XmlParser().parse(imlFile.toFile())
     Node component = root.component.find { it.@name == 'NewModuleRootManager' }
@@ -117,6 +120,8 @@ class IDEAPlugin extends BaseGroovyPlugin {
     def result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + writer.toString().replace("/>", " />").trim() + "\n\n"
     output.debug("New .iml file is\n\n%s", result)
     imlFile.toFile().write(result)
+
+    output.info("Update complete")
   }
 
   private static Map<String, String> appendScope(Map<String, String> attributes, String scope) {

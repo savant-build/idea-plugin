@@ -14,12 +14,20 @@
  * language governing permissions and limitations under the License.
  */
 package org.savantbuild.plugin.dep.idea
+
+import org.savantbuild.domain.Project
+
+import java.nio.file.Path
+import java.nio.file.Paths
+
 /**
  * Settings for the IDEA plugin.
  *
  * @author Brian Pontarelli
  */
 class IDEASettings {
+  Path imlFile
+
   /**
    * Dependencies map. This maps IDEA scopes to Dependency sets. These are used to update the .iml file
    * based on the project's dependencies. The default configuration is:
@@ -77,4 +85,14 @@ class IDEASettings {
    * </pre>
    */
   Map<String, String> moduleMap = [:]
+
+  /**
+   * Constructs the default IDEA plugin settings. This sets the {@link #imlFile} field to the project name plus the
+   * {@code .iml} extension.
+   *
+   * @param project The project.
+   */
+  IDEASettings(Project project) {
+    this.imlFile = Paths.get(project.name + ".iml")
+  }
 }
