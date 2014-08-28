@@ -22,6 +22,7 @@ import org.savantbuild.domain.Project
 import org.savantbuild.output.Output
 import org.savantbuild.plugin.dep.DependencyPlugin
 import org.savantbuild.plugin.groovy.BaseGroovyPlugin
+import org.savantbuild.runtime.RuntimeConfiguration
 import org.savantbuild.util.Graph
 
 import java.nio.file.Files
@@ -36,10 +37,10 @@ class IDEAPlugin extends BaseGroovyPlugin {
   IDEASettings settings
   DependencyPlugin dependencyPlugin
 
-  IDEAPlugin(Project project, Output output) {
-    super(project, output)
+  IDEAPlugin(Project project, RuntimeConfiguration runtimeConfiguration, Output output) {
+    super(project, runtimeConfiguration, output)
     settings = new IDEASettings(project)
-    dependencyPlugin = new DependencyPlugin(project, output)
+    dependencyPlugin = new DependencyPlugin(project, runtimeConfiguration, output)
   }
 
   /**

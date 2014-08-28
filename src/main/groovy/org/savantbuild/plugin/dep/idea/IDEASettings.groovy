@@ -56,6 +56,7 @@ class IDEASettings {
           [group: "compile", transitive: false, fetchSource: true]
       ],
       "RUNTIME": [
+          [group: "compile", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]],
           [group: "runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
       ],
       "TEST": [
