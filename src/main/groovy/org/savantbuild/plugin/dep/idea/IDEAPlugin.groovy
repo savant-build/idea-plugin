@@ -15,7 +15,7 @@
  */
 package org.savantbuild.plugin.dep.idea
 
-import org.savantbuild.dep.domain.Dependency
+import org.savantbuild.dep.domain.Artifact
 import org.savantbuild.dep.domain.ResolvedArtifact
 import org.savantbuild.dep.graph.ResolvedArtifactGraph
 import org.savantbuild.domain.Project
@@ -70,9 +70,9 @@ class IDEAPlugin extends BaseGroovyPlugin {
     component.findAll { it.@type == "module" }.each { component.remove(it) }
 
     // Setup the dependency/module mapping so we can exclude them
-    Map<Dependency, String> dependencyModuleMap = [:]
+    Map<Artifact, String> dependencyModuleMap = [:]
     settings.moduleMap.each { id, module ->
-      dependencyModuleMap.put(new Dependency(id, false), module)
+      dependencyModuleMap.put(new Artifact(id), module)
     }
 
     // Add the libraries
@@ -92,7 +92,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
           }
 
           // Handle the module case and the library case
-          Dependency dependency = destination.toDependency()
+          Artifact dependency = destination.toArtifact()
           if (dependencyModuleMap.containsKey(dependency)) {
             component.appendNode("orderEntry", appendScope(["type": "module", "module-name": dependencyModuleMap.get(dependency)], scope))
           } else {
