@@ -49,6 +49,8 @@ class IDEAPluginTest {
 
   IDEAPlugin plugin
 
+  Path cacheDir
+
   @BeforeSuite
   public static void beforeSuite() {
     projectDir = Paths.get("")
@@ -70,7 +72,7 @@ class IDEAPluginTest {
     project.group = "org.savantbuild.test"
     project.name = "idea-plugin-test"
     project.version = new Version("1.0")
-    project.license = License.Apachev2
+    project.licenses.put(License.ApacheV2_0, null)
 
     project.dependencies = new Dependencies(
         new DependencyGroup("compile", true,
@@ -81,12 +83,14 @@ class IDEAPluginTest {
             new Artifact("org.savantbuild.test:intermediate:1.0.0", false)
         )
     );
+
+    cacheDir = projectDir.resolve("../savant-dependency-management/test-deps/savant")
     project.workflow = new Workflow(
         new FetchWorkflow(output,
-            new CacheProcess(output, projectDir.resolve("src/test/repository").toString())
+            new CacheProcess(output, cacheDir.toString())
         ),
         new PublishWorkflow(
-            new CacheProcess(output, projectDir.resolve("src/test/repository").toString())
+            new CacheProcess(output, cacheDir.toString())
         )
     )
 

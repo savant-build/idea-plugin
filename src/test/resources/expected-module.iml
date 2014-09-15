@@ -16,7 +16,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/multiple-versions/1.1.0/multiple-versions-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/multiple-versions/1.1.0/multiple-versions-1.1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
       </library>
@@ -24,7 +24,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/multiple-versions-different-dependencies/1.1.0/multiple-versions-different-dependencies-1.1.0.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/multiple-versions-different-dependencies/1.1.0/multiple-versions-different-dependencies-1.1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
       </library>
@@ -32,7 +32,7 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/intermediate/1.0.0/intermediate-1.0.0.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/intermediate/1.0.0/intermediate-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
       </library>
@@ -40,7 +40,7 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/leaf/1.0.0/leaf1-1.0.0.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/leaf/1.0.0/leaf1-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
       </library>
@@ -48,7 +48,7 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/integration-build/2.1.1-{integration}/integration-build-2.1.1-{integration}.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/integration-build/2.1.1-{integration}/integration-build-2.1.1-{integration}.jar!/" />
         </CLASSES>
         <JAVADOC />
       </library>
@@ -56,7 +56,7 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/leaf1/1.0.0/leaf1-1.0.0.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/leaf1/1.0.0/leaf1-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
       </library>
@@ -65,11 +65,11 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/leaf3/1.0.0/leaf3-1.0.0.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/leaf3/1.0.0/leaf3-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/idea-plugin/src/test/repository/org/savantbuild/test/leaf3/1.0.0/leaf3-1.0.0-src.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/leaf3/1.0.0/leaf3-1.0.0-src.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
