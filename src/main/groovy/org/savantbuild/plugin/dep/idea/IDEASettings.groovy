@@ -55,13 +55,13 @@ class IDEASettings {
       "COMPILE": [
           [group: "compile", transitive: false, fetchSource: true]
       ],
+      "TEST": [
+          [group: "test-compile", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]],
+          [group: "test-runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
+      ],
       "RUNTIME": [
           [group: "compile", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]],
           [group: "runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
-      ],
-      "TEST": [
-          [group: "test-compile", transitive: false, fetchSource: true],
-          [group: "test-runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
       ]
   ]
 
