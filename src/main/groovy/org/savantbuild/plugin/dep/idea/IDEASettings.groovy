@@ -33,19 +33,22 @@ class IDEASettings {
    * based on the project's dependencies. The default configuration is:
    *
    * <pre>
-   *   "PROVIDED": [
+   *   [
+   *     "PROVIDED": [
    *       [group: "provided", transitive: true, fetchSource: true, transitiveGroups: ["provided", "compile", "runtime"]]
-   *   ],
-   *   "COMPILE": [
-   *       [group: "provided", transitive: false, fetchSource: true]
-   *   ],
-   *   "RUNTIME": [
-   *       [group: "runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
-   *   ],
-   *   "TEST": [
-   *       [group: "test-compile", transitive: false, fetchSource: true],
+   *     ],
+   *     "COMPILE": [
+   *       [group: "compile", transitive: false, fetchSource: true]
+   *     ],
+   *     "TEST": [
+   *       [group: "test-compile", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]],
    *       [group: "test-runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
-   *   ]
+   *     ],
+   *     "RUNTIME": [
+   *       [group: "compile", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]],
+   *       [group: "runtime", transitive: true, fetchSource: true, transitiveGroups: ["compile", "runtime"]]
+   *     ]
+   * ]
    * </pre>
    */
   Map<String, List<Map<String, Object>>> dependenciesMap = [
