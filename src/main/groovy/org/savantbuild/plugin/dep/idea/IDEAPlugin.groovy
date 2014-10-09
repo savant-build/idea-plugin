@@ -34,8 +34,9 @@ import java.nio.file.Path
  * @author Brian Pontarelli
  */
 class IDEAPlugin extends BaseGroovyPlugin {
-  IDEASettings settings
   DependencyPlugin dependencyPlugin
+
+  IDEASettings settings
 
   IDEAPlugin(Project project, RuntimeConfiguration runtimeConfiguration, Output output) {
     super(project, runtimeConfiguration, output)
@@ -100,8 +101,9 @@ class IDEAPlugin extends BaseGroovyPlugin {
             Node library = orderEntry.appendNode("library")
             library.appendNode("CLASSES").appendNode("root", [url: "jar://${destination.file.toRealPath().toString().replace(userHome, "\$USER_HOME\$")}!/"])
             library.appendNode("JAVADOC")
+            Node source = library.appendNode("SOURCES")
             if (destination.sourceFile != null) {
-              library.appendNode("SOURCES").appendNode("root", [url: "jar://${destination.sourceFile.toRealPath().toString().replace(userHome, "\$USER_HOME\$")}!/"])
+              source.appendNode("root", [url: "jar://${destination.sourceFile.toRealPath().toString().replace(userHome, "\$USER_HOME\$")}!/"])
             }
           }
 

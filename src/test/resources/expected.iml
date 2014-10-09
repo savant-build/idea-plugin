@@ -19,6 +19,7 @@
           <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/multiple-versions/1.1.0/multiple-versions-1.1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -27,6 +28,7 @@
           <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/multiple-versions-different-dependencies/1.1.0/multiple-versions-different-dependencies-1.1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -35,6 +37,7 @@
           <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/intermediate/1.0.0/intermediate-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -43,6 +46,7 @@
           <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/leaf/1.0.0/leaf1-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -51,6 +55,7 @@
           <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/integration-build/2.1.1-{integration}/integration-build-2.1.1-{integration}.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -59,6 +64,7 @@
           <root url="jar://$USER_HOME$/dev/os/inversoft/savant-build/savant-dependency-management/test-deps/savant/org/savantbuild/test/leaf1/1.0.0/leaf1-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
