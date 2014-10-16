@@ -122,4 +122,18 @@ class IDEAPluginTest {
     String expected = new String(Files.readAllBytes(projectDir.resolve("src/test/resources/expected-module.iml")))
     assertEquals(actual, expected)
   }
+
+  @Test
+  public void noDependencies() throws Exception {
+    project.dependencies = null
+    project.artifactGraph = null
+    def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
+    Files.copy(projectDir.resolve("src/test/resources/test.iml"), imlFile)
+
+    plugin.iml()
+
+    String actual = new String(Files.readAllBytes(imlFile))
+    String expected = new String(Files.readAllBytes(projectDir.resolve("src/test/resources/no-dependencies.iml")))
+    assertEquals(actual, expected)
+  }
 }

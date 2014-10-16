@@ -76,7 +76,27 @@ class IDEAPlugin extends BaseGroovyPlugin {
       dependencyModuleMap.put(new Artifact(id, false), module)
     }
 
-    // Add the libraries
+    // Add the dependencies
+    if (project.artifactGraph != null) {
+      addDependencies(dependencyModuleMap, component)
+    }
+
+    // Call the closure if it exists
+    if (closure) {
+      closure.call(root)
+    }
+
+    // Write out the .iml file
+    def writer = new StringWriter()
+    new XmlNodePrinter(new PrintWriter(writer), "  ").print(root)
+    def result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + writer.toString().replace("/>", " />").trim() + "\n\n"
+    output.debug("New .iml file is\n\n%s", result)
+    imlFile.toFile().write(result)
+
+    output.info("Update complete")
+  }
+
+  private void addDependencies(dependencyModuleMap, component) {
     String userHome = System.getProperty("user.home")
     Set<ResolvedArtifact> addedToIML = new HashSet<>()
     settings.dependenciesMap.each { scope, dependencySet ->
@@ -111,20 +131,6 @@ class IDEAPlugin extends BaseGroovyPlugin {
         } as Graph.GraphConsumer)
       }
     }
-
-    // Call the closure if it exists
-    if (closure) {
-      closure.call(root)
-    }
-
-    // Write out the .iml file
-    def writer = new StringWriter()
-    new XmlNodePrinter(new PrintWriter(writer), "  ").print(root)
-    def result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + writer.toString().replace("/>", " />").trim() + "\n\n"
-    output.debug("New .iml file is\n\n%s", result)
-    imlFile.toFile().write(result)
-
-    output.info("Update complete")
   }
 
   private static Map<String, String> appendScope(Map<String, String> attributes, String scope) {
