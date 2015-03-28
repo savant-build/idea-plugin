@@ -56,7 +56,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
       fail("IntelliJ IDEA module file [${imlFile}] doesn't exist or isn't readable and writable")
     }
 
-    output.info("Updating the project IML file [${imlFile}]")
+    output.infoln("Updating the project IML file [${imlFile}]")
 
     Node root = new XmlParser().parse(imlFile.toFile())
     Node component = root.component.find { it.@name == 'NewModuleRootManager' }
@@ -90,10 +90,10 @@ class IDEAPlugin extends BaseGroovyPlugin {
     def writer = new StringWriter()
     new XmlNodePrinter(new PrintWriter(writer), "  ").print(root)
     def result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + writer.toString().replace("/>", " />").trim() + "\n\n"
-    output.debug("New .iml file is\n\n%s", result)
+    output.debugln("New .iml file is\n\n%s", result)
     imlFile.toFile().write(result)
 
-    output.info("Update complete")
+    output.infoln("Update complete")
   }
 
   private void addDependencies(dependencyModuleMap, component) {
@@ -105,7 +105,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
       }
 
       if (graph.size() > 0) {
-        graph.traverse(graph.root, false, { origin, destination, edge, depth ->
+        graph.traverse(graph.root, false, null, { origin, destination, edge, depth, isLast ->
           // If we already added the artifact, we can skip it and keep traversing because this group could be transitive
           // and we need to traverse down the graph still.
           if (addedToIML.contains(destination)) {
