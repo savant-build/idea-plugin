@@ -25,6 +25,17 @@ import org.savantbuild.domain.Project
  * @author Brian Pontarelli
  */
 class IDEASettings {
+  /**
+   * The IML file. This can be defined as a String or a Path object like this:
+   *
+   * <pre>
+   *   idea.settings.imlFile = "foo.iml"
+   *
+   *   or
+   *
+   *   idea.settings.imlFile = Paths.get("foo.iml")
+   * </pre>
+   */
   Object imlFile
 
   /**
