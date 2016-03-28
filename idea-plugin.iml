@@ -15,11 +15,11 @@
     <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.savant/cache/org/codehaus/groovy/groovy/2.2.1/groovy-all-2.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/.savant/cache/org/codehaus/groovy/groovy/2.4.6/groovy-all-indy-2.4.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$USER_HOME$/.savant/cache/org/codehaus/groovy/groovy/2.2.1/groovy-all-2.2.1-src.jar!/" />
+          <root url="jar://$USER_HOME$/.savant/cache/org/codehaus/groovy/groovy/2.4.6/groovy-all-indy-2.4.6-src.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -36,9 +36,8 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="savant-utils" scope="PROVIDED" />
-    <orderEntry type="module" module-name="dependency-plugin" />
-    <orderEntry type="module" module-name="savant-io" scope="TEST" />
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module" module-name="savant-io" scope="PROVIDED" />
+    <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/.savant/cache/org/apache/ant/ant/1.9.4/ant-1.9.4.jar!/" />
@@ -49,7 +48,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/.savant/cache/org/apache/ant/ant-launcher/1.9.4/ant-launcher-1.9.4.jar!/" />
@@ -60,7 +59,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/.savant/cache/org/apache/commons/commons-compress/1.7.0/commons-compress-1.7.0.jar!/" />
@@ -71,7 +70,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
+    <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/.savant/cache/org/tukaani/xz/1.4.0/xz-1.4.0.jar!/" />
@@ -82,6 +81,7 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="dependency-plugin" />
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
@@ -117,3 +117,4 @@
     </orderEntry>
   </component>
 </module>
+

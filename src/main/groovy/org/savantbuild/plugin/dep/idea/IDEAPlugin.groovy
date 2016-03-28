@@ -15,18 +15,19 @@
  */
 package org.savantbuild.plugin.dep.idea
 
+import java.nio.file.Files
+import java.nio.file.Path
+
 import org.savantbuild.dep.domain.Artifact
 import org.savantbuild.dep.domain.ResolvedArtifact
 import org.savantbuild.dep.graph.ResolvedArtifactGraph
 import org.savantbuild.domain.Project
+import org.savantbuild.io.FileTools
 import org.savantbuild.output.Output
 import org.savantbuild.plugin.dep.DependencyPlugin
 import org.savantbuild.plugin.groovy.BaseGroovyPlugin
 import org.savantbuild.runtime.RuntimeConfiguration
 import org.savantbuild.util.Graph
-
-import java.nio.file.Files
-import java.nio.file.Path
 
 /**
  * IntelliJ IDEA plugin.
@@ -51,7 +52,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
    * @param closure The closure.
    */
   void iml(Closure closure = null) {
-    Path imlFile = project.directory.resolve(settings.imlFile)
+    Path imlFile = project.directory.resolve(FileTools.toPath(settings.imlFile))
     if (!Files.isRegularFile(imlFile) || !Files.isReadable(imlFile) || !Files.isWritable(imlFile)) {
       fail("IntelliJ IDEA module file [${imlFile}] doesn't exist or isn't readable and writable")
     }

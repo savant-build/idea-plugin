@@ -17,7 +17,7 @@ import java.nio.file.Paths
 
 savantVersion = "1.0.0"
 
-project(group: "org.savantbuild.plugin", name: "idea", version: "1.0.0", licenses: ["ApacheV2_0"]) {
+project(group: "org.savantbuild.plugin", name: "idea", version: "1.0.1", licenses: ["ApacheV2_0"]) {
   workflow {
     standard()
   }
@@ -30,13 +30,13 @@ project(group: "org.savantbuild.plugin", name: "idea", version: "1.0.0", license
     group(name: "provided") {
       dependency(id: "org.savantbuild:savant-core:${savantVersion}")
       dependency(id: "org.savantbuild:savant-dependency-management:${savantVersion}")
+      dependency(id: "org.savantbuild:savant-io:${savantVersion}")
       dependency(id: "org.savantbuild:savant-utils:${savantVersion}")
     }
     group(name: "compile") {
       dependency(id: "org.savantbuild.plugin:dependency:${savantVersion}")
     }
     group(name: "test-compile", export: false) {
-      dependency(id: "org.savantbuild:savant-io:${savantVersion}")
       dependency(id: "org.testng:testng:6.8.7")
     }
   }

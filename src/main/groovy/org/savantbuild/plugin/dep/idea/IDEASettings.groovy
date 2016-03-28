@@ -15,10 +15,9 @@
  */
 package org.savantbuild.plugin.dep.idea
 
-import org.savantbuild.domain.Project
-
-import java.nio.file.Path
 import java.nio.file.Paths
+
+import org.savantbuild.domain.Project
 
 /**
  * Settings for the IDEA plugin.
@@ -26,7 +25,7 @@ import java.nio.file.Paths
  * @author Brian Pontarelli
  */
 class IDEASettings {
-  Path imlFile
+  Object imlFile
 
   /**
    * Dependencies map. This maps IDEA scopes to Dependency sets. These are used to update the .iml file
