@@ -29,6 +29,9 @@ import org.savantbuild.plugin.groovy.BaseGroovyPlugin
 import org.savantbuild.runtime.RuntimeConfiguration
 import org.savantbuild.util.Graph
 
+import groovy.xml.XmlNodePrinter
+import groovy.xml.XmlParser
+
 /**
  * IntelliJ IDEA plugin.
  *
