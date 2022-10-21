@@ -15,12 +15,20 @@
  */
 package org.savantbuild.plugin.dep.idea
 
-import org.savantbuild.dep.domain.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+
+import org.savantbuild.dep.domain.Artifact
+import org.savantbuild.dep.domain.Dependencies
+import org.savantbuild.dep.domain.DependencyGroup
+import org.savantbuild.dep.domain.License
 import org.savantbuild.dep.workflow.FetchWorkflow
 import org.savantbuild.dep.workflow.PublishWorkflow
 import org.savantbuild.dep.workflow.Workflow
 import org.savantbuild.dep.workflow.process.CacheProcess
 import org.savantbuild.domain.Project
+import org.savantbuild.domain.Version
 import org.savantbuild.io.FileTools
 import org.savantbuild.output.Output
 import org.savantbuild.output.SystemOutOutput
@@ -28,10 +36,6 @@ import org.savantbuild.runtime.RuntimeConfiguration
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 
 import static org.testng.Assert.assertEquals
 
@@ -52,7 +56,7 @@ class IDEAPluginTest {
   Path cacheDir
 
   @BeforeSuite
-  public static void beforeSuite() {
+  static void beforeSuite() {
     projectDir = Paths.get("")
     if (!Files.isRegularFile(projectDir.resolve("LICENSE"))) {
       projectDir = Paths.get("../idea-plugin")
@@ -60,7 +64,7 @@ class IDEAPluginTest {
   }
 
   @BeforeMethod
-  public void beforeMethod() {
+  void beforeMethod() {
     FileTools.prune(projectDir.resolve("build/test"))
 
     output = new SystemOutOutput(true)
@@ -72,7 +76,7 @@ class IDEAPluginTest {
     project.group = "org.savantbuild.test"
     project.name = "idea-plugin-test"
     project.version = new Version("1.0")
-    project.licenses.put(License.ApacheV2_0, null)
+    project.licenses.add(License.parse("ApacheV2_0", null))
 
     project.dependencies = new Dependencies(
         new DependencyGroup("compile", true,
@@ -82,7 +86,7 @@ class IDEAPluginTest {
         new DependencyGroup("runtime", true,
             new Artifact("org.savantbuild.test:intermediate:1.0.0", false)
         )
-    );
+    )
 
     cacheDir = projectDir.resolve("../savant-dependency-management/test-deps/savant")
     project.workflow = new Workflow(
@@ -98,7 +102,7 @@ class IDEAPluginTest {
   }
 
   @Test
-  public void iml() throws Exception {
+  void iml() throws Exception {
     def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
     Files.copy(projectDir.resolve("src/test/resources/test.iml"), imlFile)
 
@@ -110,7 +114,7 @@ class IDEAPluginTest {
   }
 
   @Test
-  public void imlModule() throws Exception {
+  void imlModule() throws Exception {
     def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
     Files.copy(projectDir.resolve("src/test/resources/test.iml"), imlFile)
 
@@ -124,7 +128,7 @@ class IDEAPluginTest {
   }
 
   @Test
-  public void noDependencies() throws Exception {
+  void noDependencies() throws Exception {
     project.dependencies = null
     project.artifactGraph = null
     def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
