@@ -80,11 +80,11 @@ class IDEAPluginTest {
 
     project.dependencies = new Dependencies(
         new DependencyGroup("compile", true,
-            new Artifact("org.savantbuild.test:multiple-versions:1.0.0", false),
-            new Artifact("org.savantbuild.test:multiple-versions-different-dependencies:1.0.0", false)
+            new Artifact("org.savantbuild.test:multiple-versions:1.0.0"),
+            new Artifact("org.savantbuild.test:multiple-versions-different-dependencies:1.0.0")
         ),
         new DependencyGroup("runtime", true,
-            new Artifact("org.savantbuild.test:intermediate:1.0.0", false)
+            new Artifact("org.savantbuild.test:intermediate:1.0.0")
         )
     )
 

@@ -77,7 +77,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
     // Setup the dependency/module mapping so we can exclude them
     Map<Artifact, String> dependencyModuleMap = [:]
     settings.moduleMap.each { id, module ->
-      dependencyModuleMap.put(new Artifact(id, false), module)
+      dependencyModuleMap.put(new Artifact(id), module)
     }
 
     // Add the dependencies
