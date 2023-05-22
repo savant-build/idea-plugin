@@ -52,7 +52,7 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/os/savant/savant-dependency-management/test-deps/savant/org/savantbuild/test/integration-build/2.1.1-{integration}/integration-build-2.1.1-{integration}.jar!/" />
+          <root url="jar://$USER_HOME$/dev/os/savant/savant-dependency-management/test-deps/integration/org/savantbuild/test/integration-build/2.1.1-{integration}/integration-build-2.1.1-{integration}.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
