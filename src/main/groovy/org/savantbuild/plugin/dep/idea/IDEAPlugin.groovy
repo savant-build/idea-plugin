@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2023, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,11 +123,11 @@ class IDEAPlugin extends BaseGroovyPlugin {
           } else {
             Node orderEntry = component.appendNode("orderEntry", appendScope(["type": "module-library"], scope))
             Node library = orderEntry.appendNode("library")
-            library.appendNode("CLASSES").appendNode("root", [url: "jar://${destination.file.toRealPath().toString().replace(userHome, "\$USER_HOME\$")}!/"])
+            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, userHome)}!/"])
             library.appendNode("JAVADOC")
             Node source = library.appendNode("SOURCES")
             if (destination.sourceFile != null) {
-              source.appendNode("root", [url: "jar://${destination.sourceFile.toRealPath().toString().replace(userHome, "\$USER_HOME\$")}!/"])
+              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, userHome)}!/"])
             }
           }
 
@@ -135,6 +135,18 @@ class IDEAPlugin extends BaseGroovyPlugin {
         } as Graph.GraphConsumer)
       }
     }
+  }
+
+  private toRelativePATH(Path path, String userHome) {
+    def realPath = path.toRealPath().toString()
+    int index = realPath.indexOf(".savant/cache")
+    if (index != -1) {
+      realPath = "\$MODULE_DIR\$" + realPath.substring(index - 1)
+    } else {
+      realPath = realPath.replace(userHome, "\$USER_HOME\$")
+    }
+
+    return realPath
   }
 
   private static Map<String, String> appendScope(Map<String, String> attributes, String scope) {
