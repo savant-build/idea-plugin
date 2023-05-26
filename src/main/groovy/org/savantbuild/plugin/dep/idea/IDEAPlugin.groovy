@@ -138,14 +138,21 @@ class IDEAPlugin extends BaseGroovyPlugin {
   }
 
   private toRelativePATH(Path path, String userHome) {
-    // Example global cache: /Users/bob/.savant/cache/com/inversoft/jackson5/3.0.1/jackson5-3.0.1-src.jar
-    // Example module cache: /Users/bob/dev/project/my-project/.savant/cache/com/inversoft/jackson5/3.0.1/jackson5-3.0.1-src.jar
+    def artifactRealPath = path.toRealPath().toString()
+    def projectRealPath = project.directory.toRealPath().toString()
 
-    // If we replace replace the project directory with $MODULE_DIR$ first, the second replace should only catch
-    // dependencies not found in the module cache.
-    return path.toRealPath().toString()
-        .replace(project.directory.toString(), "\$MODULE_DIR\$")
-        .replace(userHome.toString(), "\$USER_HOME\$")
+    // Only perform a replace if the project path or user home are at the front of the real path
+    // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
+
+    if (artifactRealPath.startsWith(projectRealPath)) {
+      artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
+    }
+
+    if (artifactRealPath.startsWith(userHome)) {
+      artifactRealPath = "\$USER_HOME\$" + artifactRealPath.substring(userHome.length())
+    }
+
+    return artifactRealPath
   }
 
   private static Map<String, String> appendScope(Map<String, String> attributes, String scope) {
