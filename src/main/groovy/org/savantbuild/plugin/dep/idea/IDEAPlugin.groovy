@@ -138,15 +138,14 @@ class IDEAPlugin extends BaseGroovyPlugin {
   }
 
   private toRelativePATH(Path path, String userHome) {
-    def realPath = path.toRealPath().toString()
-    int index = realPath.indexOf(".savant/cache")
-    if (index != -1) {
-      realPath = "\$MODULE_DIR\$" + realPath.substring(index - 1)
-    } else {
-      realPath = realPath.replace(userHome, "\$USER_HOME\$")
-    }
+    // Example global cache: /Users/bob/.savant/cache/com/inversoft/jackson5/3.0.1/jackson5-3.0.1-src.jar
+    // Example module cache: /Users/bob/dev/project/my-project/.savant/cache/com/inversoft/jackson5/3.0.1/jackson5-3.0.1-src.jar
 
-    return realPath
+    // If we replace replace the project directory with $MODULE_DIR$ first, the second replace should only catch
+    // dependencies not found in the module cache.
+    return path.toRealPath().toString()
+        .replace(project.directory.toString(), "\$MODULE_DIR\$")
+        .replace(userHome.toString(), "\$USER_HOME\$")
   }
 
   private static Map<String, String> appendScope(Map<String, String> attributes, String scope) {
