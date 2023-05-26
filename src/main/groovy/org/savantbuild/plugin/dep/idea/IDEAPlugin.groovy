@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2023, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,11 +123,11 @@ class IDEAPlugin extends BaseGroovyPlugin {
           } else {
             Node orderEntry = component.appendNode("orderEntry", appendScope(["type": "module-library"], scope))
             Node library = orderEntry.appendNode("library")
-            library.appendNode("CLASSES").appendNode("root", [url: "jar://${destination.file.toRealPath().toString().replace(userHome, "\$USER_HOME\$")}!/"])
+            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, userHome)}!/"])
             library.appendNode("JAVADOC")
             Node source = library.appendNode("SOURCES")
             if (destination.sourceFile != null) {
-              source.appendNode("root", [url: "jar://${destination.sourceFile.toRealPath().toString().replace(userHome, "\$USER_HOME\$")}!/"])
+              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, userHome)}!/"])
             }
           }
 
@@ -135,6 +135,24 @@ class IDEAPlugin extends BaseGroovyPlugin {
         } as Graph.GraphConsumer)
       }
     }
+  }
+
+  private toRelativePATH(Path path, String userHome) {
+    def artifactRealPath = path.toRealPath().toString()
+    def projectRealPath = project.directory.toRealPath().toString()
+
+    // Only perform a replace if the project path or user home are at the front of the real path
+    // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
+
+    if (artifactRealPath.startsWith(projectRealPath)) {
+      artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
+    }
+
+    if (artifactRealPath.startsWith(userHome)) {
+      artifactRealPath = "\$USER_HOME\$" + artifactRealPath.substring(userHome.length())
+    }
+
+    return artifactRealPath
   }
 
   private static Map<String, String> appendScope(Map<String, String> attributes, String scope) {
