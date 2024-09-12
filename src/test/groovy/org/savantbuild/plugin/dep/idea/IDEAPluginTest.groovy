@@ -77,7 +77,7 @@ class IDEAPluginTest {
     project = new Project(path, output)
     project.group = "org.savantbuild.test"
     project.name = "idea-plugin-test"
-    project.version = new Version("1.0")
+    project.version = new Version("1.0.0")
     project.licenses.add(License.parse("ApacheV2_0", null))
 
     project.dependencies = new Dependencies(
