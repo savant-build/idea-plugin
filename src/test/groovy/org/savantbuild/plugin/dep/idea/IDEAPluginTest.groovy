@@ -27,6 +27,7 @@ import org.savantbuild.dep.workflow.FetchWorkflow
 import org.savantbuild.dep.workflow.PublishWorkflow
 import org.savantbuild.dep.workflow.Workflow
 import org.savantbuild.dep.workflow.process.CacheProcess
+import org.savantbuild.dep.workflow.process.MavenProcess
 import org.savantbuild.domain.Project
 import org.savantbuild.domain.Version
 import org.savantbuild.io.FileTools
@@ -83,7 +84,9 @@ class IDEAPluginTest {
     project.dependencies = new Dependencies(
         new DependencyGroup("compile", true,
             new Artifact("org.savantbuild.test:multiple-versions:1.0.0"),
-            new Artifact("org.savantbuild.test:multiple-versions-different-dependencies:1.0.0")
+            new Artifact("org.savantbuild.test:multiple-versions-different-dependencies:1.0.0"),
+            // simple, no dependencies
+            new Artifact("org.slf4j:slf4j-api:2.0.16")
         ),
         new DependencyGroup("runtime", true,
             new Artifact("org.savantbuild.test:intermediate:1.0.0")
@@ -95,7 +98,8 @@ class IDEAPluginTest {
 
     project.workflow = new Workflow(
         new FetchWorkflow(output,
-            new CacheProcess(output, cacheDir.toString(), integrationDir.toString())
+            new CacheProcess(output, cacheDir.toString(), integrationDir.toString()),
+            new MavenProcess(output, "https://repo1.maven.org/maven2", null, null)
         ),
         new PublishWorkflow(
             new CacheProcess(output, cacheDir.toString(), integrationDir.toString())
