@@ -140,6 +140,21 @@ class IDEAPluginTest {
   }
 
   @Test
+  void imlModule_run_twice() throws Exception {
+    def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
+    Files.copy(projectDir.resolve("src/test/resources/test.iml"), imlFile)
+
+    plugin.settings.moduleMap.put("org.savantbuild.test:leaf2:1.0.0", "leaf2-module")
+
+    plugin.iml()
+    String actual = new String(Files.readAllBytes(imlFile))
+    plugin.iml()
+    String secondTime = new String(Files.readAllBytes(imlFile))
+
+    assertEquals(actual, secondTime)
+  }
+
+  @Test
   void noDependencies() throws Exception {
     project.dependencies = null
     project.artifactGraph = null
