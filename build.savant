@@ -50,7 +50,7 @@ project(group: "org.savantbuild.plugin", name: "idea", version: "2.0.0-RC.7", li
 }
 
 // Plugins
-def dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:2.0.0-RC.6")
+def dependency = loadPlugin(id: "org.savantbuild.plugin:dependency:2.0.0-RC.7")
 def groovy = loadPlugin(id: "org.savantbuild.plugin:groovy:2.0.0-RC.6")
 def groovyTestNG = loadPlugin(id: "org.savantbuild.plugin:groovy-testng:2.0.0-RC.6")
 // dog fooding
