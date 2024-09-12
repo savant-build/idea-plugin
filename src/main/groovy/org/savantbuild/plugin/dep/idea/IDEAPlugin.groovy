@@ -141,9 +141,9 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private toRelativePATH(Path path, String userHome) {
     def artifactRealPath = path.toRealPath().toString()
-    CacheProcess cacheProcess = project.workflow.fetchWorkflow.processes.find { p ->
+    def cacheProcess = project.workflow.fetchWorkflow.processes.find { p ->
       p instanceof CacheProcess
-    }
+    } as CacheProcess
     def cacheDir = cacheProcess ? new File(cacheProcess.dir).canonicalPath: null
     def projectRealPath = project.directory.toRealPath().toString()
 
