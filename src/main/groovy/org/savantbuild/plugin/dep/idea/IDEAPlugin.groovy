@@ -144,14 +144,16 @@ class IDEAPlugin extends BaseGroovyPlugin {
     def cacheProcess = project.workflow.fetchWorkflow.processes.find { p ->
       p instanceof CacheProcess
     } as CacheProcess
-    def cacheDir = cacheProcess ? new File(cacheProcess.dir).canonicalPath: null
+    def cacheDir = cacheProcess ? new File(cacheProcess.dir): null
     def projectRealPath = project.directory.toRealPath().toString()
 
     // Only perform a replace if the project path or user home are at the front of the real path
     // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
 
-    if (cacheDir && artifactRealPath.startsWith(cacheDir)) {
-      artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(cacheDir.length())
+    if (cacheDir && artifactRealPath.startsWith(cacheDir.canonicalPath)) {
+      def relativeToProject = new File(projectRealPath).relativePath(cacheDir)
+      artifactRealPath = "\$MODULE_DIR\$/" + artifactRealPath.replace(cacheDir.canonicalPath,
+      relativeToProject)
     }
     else if (artifactRealPath.startsWith(projectRealPath)) {
       artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
