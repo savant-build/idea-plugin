@@ -139,6 +139,8 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private toRelativePATH(Path path, String userHome) {
     def artifactRealPath = path.toRealPath().toString()
+    // If we have a cache process defined, getting the first one is useful because it gives a more precise
+    // location of where the .savant/cache directory is. In our tests, it's in ../../../savant-dependency-management
     def cacheProcess = project.workflow.fetchWorkflow.processes.find { p -> p instanceof CacheProcess
     } as CacheProcess
     def cacheDir = cacheProcess ? new File(cacheProcess.dir) : null
