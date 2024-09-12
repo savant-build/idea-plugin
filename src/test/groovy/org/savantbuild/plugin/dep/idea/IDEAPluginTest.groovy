@@ -108,6 +108,9 @@ class IDEAPluginTest {
     )
 
     plugin = new IDEAPlugin(project, new RuntimeConfiguration(), output)
+    // ensure our cached Maven artifact directory is clean, so that we get deterministic results
+    def slf4jDir = Paths.get(cacheDir.toString(), "org/slf4j")
+    slf4jDir.deleteDir()
   }
 
   @Test
