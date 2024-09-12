@@ -17,10 +17,12 @@ package org.savantbuild.plugin.dep.idea
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 import org.savantbuild.dep.domain.Artifact
 import org.savantbuild.dep.domain.ResolvedArtifact
 import org.savantbuild.dep.graph.ResolvedArtifactGraph
+import org.savantbuild.dep.workflow.process.CacheProcess
 import org.savantbuild.domain.Project
 import org.savantbuild.io.FileTools
 import org.savantbuild.output.Output
@@ -139,12 +141,19 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private toRelativePATH(Path path, String userHome) {
     def artifactRealPath = path.toRealPath().toString()
+    CacheProcess cacheProcess = project.workflow.fetchWorkflow.processes.find { p ->
+      p instanceof CacheProcess
+    }
+    def cacheDir = cacheProcess ? new File(cacheProcess.dir).canonicalPath: null
     def projectRealPath = project.directory.toRealPath().toString()
 
     // Only perform a replace if the project path or user home are at the front of the real path
     // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
 
-    if (artifactRealPath.startsWith(projectRealPath)) {
+    if (cacheDir && artifactRealPath.startsWith(cacheDir)) {
+      artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(cacheDir.length())
+    }
+    else if (artifactRealPath.startsWith(projectRealPath)) {
       artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
     }
 
