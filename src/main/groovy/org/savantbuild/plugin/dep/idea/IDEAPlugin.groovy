@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2023, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2024, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.savantbuild.plugin.dep.idea
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 
 import org.savantbuild.dep.domain.Artifact
 import org.savantbuild.dep.domain.ResolvedArtifact
@@ -78,8 +77,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
     // Setup the dependency/module mapping so we can exclude them
     Map<Artifact, String> dependencyModuleMap = [:]
-    settings.moduleMap.each { id, module ->
-      dependencyModuleMap.put(new Artifact(id), module)
+    settings.moduleMap.each { id, module -> dependencyModuleMap.put(new Artifact(id), module)
     }
 
     // Add the dependencies
@@ -141,10 +139,9 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private toRelativePATH(Path path, String userHome) {
     def artifactRealPath = path.toRealPath().toString()
-    def cacheProcess = project.workflow.fetchWorkflow.processes.find { p ->
-      p instanceof CacheProcess
+    def cacheProcess = project.workflow.fetchWorkflow.processes.find { p -> p instanceof CacheProcess
     } as CacheProcess
-    def cacheDir = cacheProcess ? new File(cacheProcess.dir): null
+    def cacheDir = cacheProcess ? new File(cacheProcess.dir) : null
     def projectRealPath = project.directory.toRealPath().toString()
 
     // Only perform a replace if the project path or user home are at the front of the real path
@@ -153,9 +150,8 @@ class IDEAPlugin extends BaseGroovyPlugin {
     if (cacheDir && artifactRealPath.startsWith(cacheDir.canonicalPath)) {
       def relativeToProject = new File(projectRealPath).relativePath(cacheDir)
       artifactRealPath = "\$MODULE_DIR\$/" + artifactRealPath.replace(cacheDir.canonicalPath,
-      relativeToProject)
-    }
-    else if (artifactRealPath.startsWith(projectRealPath)) {
+          relativeToProject)
+    } else if (artifactRealPath.startsWith(projectRealPath)) {
       artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
     }
 
