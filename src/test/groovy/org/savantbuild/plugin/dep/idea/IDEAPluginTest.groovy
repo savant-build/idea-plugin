@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2024, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * language governing permissions and limitations under the License.
  */
 package org.savantbuild.plugin.dep.idea
+
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -93,8 +94,14 @@ class IDEAPluginTest {
         )
     )
 
-    cacheDir = projectDir.resolve("../savant-dependency-management/test-deps/savant")
-    integrationDir = projectDir.resolve("../savant-dependency-management/test-deps/integration")
+    cacheDir = projectDir.resolve("build/test/test-deps/savant")
+    cacheDir.createParentDirectories()
+    copyRecursive(projectDir.resolve("../savant-dependency-management/test-deps/savant"),
+        cacheDir);
+    integrationDir = projectDir.resolve("build/test/test-deps/integration")
+    integrationDir.createParentDirectories()
+    copyRecursive(projectDir.resolve("../savant-dependency-management/test-deps/integration"),
+        integrationDir)
 
     project.workflow = new Workflow(
         new FetchWorkflow(output,
@@ -123,6 +130,16 @@ class IDEAPluginTest {
     String actual = new String(Files.readAllBytes(imlFile))
     String expected = new String(Files.readAllBytes(projectDir.resolve("src/test/resources/expected.iml")))
     assertEquals(actual, expected)
+  }
+
+  private static void copyRecursive(Path source, Path dest) {
+    Files.walk(source)
+        .forEach { src ->
+          {
+            var destFile = dest.resolve(source.relativize(src));
+            Files.copy(src, destFile);
+          }
+        }
   }
 
   @Test

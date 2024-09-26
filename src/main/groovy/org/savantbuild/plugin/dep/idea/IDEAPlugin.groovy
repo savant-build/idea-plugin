@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2024, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2023, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.nio.file.Path
 import org.savantbuild.dep.domain.Artifact
 import org.savantbuild.dep.domain.ResolvedArtifact
 import org.savantbuild.dep.graph.ResolvedArtifactGraph
-import org.savantbuild.dep.workflow.process.CacheProcess
 import org.savantbuild.domain.Project
 import org.savantbuild.io.FileTools
 import org.savantbuild.output.Output
@@ -77,7 +76,8 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
     // Setup the dependency/module mapping so we can exclude them
     Map<Artifact, String> dependencyModuleMap = [:]
-    settings.moduleMap.each { id, module -> dependencyModuleMap.put(new Artifact(id), module)
+    settings.moduleMap.each { id, module ->
+      dependencyModuleMap.put(new Artifact(id), module)
     }
 
     // Add the dependencies
@@ -139,21 +139,12 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private toRelativePATH(Path path, String userHome) {
     def artifactRealPath = path.toRealPath().toString()
-    // If we have a cache process defined, getting the first one is useful because it gives a more precise
-    // location of where the .savant/cache directory is. In our tests, it's in ../../../savant-dependency-management
-    def cacheProcess = project.workflow.fetchWorkflow.processes.find { p -> p instanceof CacheProcess
-    } as CacheProcess
-    def cacheDir = cacheProcess ? new File(cacheProcess.dir) : null
     def projectRealPath = project.directory.toRealPath().toString()
 
     // Only perform a replace if the project path or user home are at the front of the real path
     // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
 
-    if (cacheDir && artifactRealPath.startsWith(cacheDir.canonicalPath)) {
-      def relativeToProject = new File(projectRealPath).relativePath(cacheDir)
-      artifactRealPath = "\$MODULE_DIR\$/" + artifactRealPath.replace(cacheDir.canonicalPath,
-          relativeToProject)
-    } else if (artifactRealPath.startsWith(projectRealPath)) {
+    if (artifactRealPath.startsWith(projectRealPath)) {
       artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
     }
 
