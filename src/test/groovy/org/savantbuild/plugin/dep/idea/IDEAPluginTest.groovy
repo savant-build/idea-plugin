@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Inversoft Inc., All Rights Reserved
+ * Copyright (c) 2014-2024, Inversoft Inc., All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.savantbuild.plugin.dep.idea
 
+
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -27,6 +28,7 @@ import org.savantbuild.dep.workflow.FetchWorkflow
 import org.savantbuild.dep.workflow.PublishWorkflow
 import org.savantbuild.dep.workflow.Workflow
 import org.savantbuild.dep.workflow.process.CacheProcess
+import org.savantbuild.dep.workflow.process.MavenProcess
 import org.savantbuild.domain.Project
 import org.savantbuild.domain.Version
 import org.savantbuild.io.FileTools
@@ -77,25 +79,34 @@ class IDEAPluginTest {
     project = new Project(path, output)
     project.group = "org.savantbuild.test"
     project.name = "idea-plugin-test"
-    project.version = new Version("1.0")
+    project.version = new Version("1.0.0")
     project.licenses.add(License.parse("ApacheV2_0", null))
 
     project.dependencies = new Dependencies(
         new DependencyGroup("compile", true,
             new Artifact("org.savantbuild.test:multiple-versions:1.0.0"),
-            new Artifact("org.savantbuild.test:multiple-versions-different-dependencies:1.0.0")
+            new Artifact("org.savantbuild.test:multiple-versions-different-dependencies:1.0.0"),
+            // simple, no dependencies
+            new Artifact("org.slf4j:slf4j-api:2.0.16")
         ),
         new DependencyGroup("runtime", true,
             new Artifact("org.savantbuild.test:intermediate:1.0.0")
         )
     )
 
-    cacheDir = projectDir.resolve("../savant-dependency-management/test-deps/savant")
-    integrationDir = projectDir.resolve("../savant-dependency-management/test-deps/integration")
+    cacheDir = projectDir.resolve("build/test/test-deps/savant")
+    cacheDir.createParentDirectories()
+    copyRecursive(projectDir.resolve("../savant-dependency-management/test-deps/savant"),
+        cacheDir);
+    integrationDir = projectDir.resolve("build/test/test-deps/integration")
+    integrationDir.createParentDirectories()
+    copyRecursive(projectDir.resolve("../savant-dependency-management/test-deps/integration"),
+        integrationDir)
 
     project.workflow = new Workflow(
         new FetchWorkflow(output,
-            new CacheProcess(output, cacheDir.toString(), integrationDir.toString())
+            new CacheProcess(output, cacheDir.toString(), integrationDir.toString()),
+            new MavenProcess(output, "https://repo1.maven.org/maven2", null, null)
         ),
         new PublishWorkflow(
             new CacheProcess(output, cacheDir.toString(), integrationDir.toString())
@@ -104,6 +115,9 @@ class IDEAPluginTest {
     )
 
     plugin = new IDEAPlugin(project, new RuntimeConfiguration(), output)
+    // ensure our cached Maven artifact directory is clean, so that we get deterministic results
+    def slf4jDir = Paths.get(cacheDir.toString(), "org/slf4j")
+    slf4jDir.deleteDir()
   }
 
   @Test
@@ -118,6 +132,16 @@ class IDEAPluginTest {
     assertEquals(actual, expected)
   }
 
+  private static void copyRecursive(Path source, Path dest) {
+    Files.walk(source)
+        .forEach { src ->
+          {
+            var destFile = dest.resolve(source.relativize(src));
+            Files.copy(src, destFile);
+          }
+        }
+  }
+
   @Test
   void imlModule() throws Exception {
     def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
@@ -130,6 +154,21 @@ class IDEAPluginTest {
     String actual = new String(Files.readAllBytes(imlFile))
     String expected = new String(Files.readAllBytes(projectDir.resolve("src/test/resources/expected-module.iml")))
     assertEquals(actual, expected)
+  }
+
+  @Test
+  void imlModule_run_twice() throws Exception {
+    def imlFile = projectDir.resolve("build/test/idea-plugin-test.iml")
+    Files.copy(projectDir.resolve("src/test/resources/test.iml"), imlFile)
+
+    plugin.settings.moduleMap.put("org.savantbuild.test:leaf2:1.0.0", "leaf2-module")
+
+    plugin.iml()
+    String actual = new String(Files.readAllBytes(imlFile))
+    plugin.iml()
+    String secondTime = new String(Files.readAllBytes(imlFile))
+
+    assertEquals(actual, secondTime)
   }
 
   @Test
