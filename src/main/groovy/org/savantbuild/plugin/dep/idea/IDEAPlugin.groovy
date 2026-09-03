@@ -17,6 +17,7 @@ package org.savantbuild.plugin.dep.idea
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 import org.savantbuild.dep.domain.Artifact
 import org.savantbuild.dep.domain.ResolvedArtifact
@@ -102,6 +103,9 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private void addDependencies(dependencyModuleMap, component) {
     String userHome = System.getProperty("user.home")
+    // Resolve the Maven local repository root ONCE per run. null when mvn is unavailable
+    // or returns nothing, in which case toRelativePATH falls back to $USER_HOME$.
+    String mavenRepository = resolveMavenRepository()
     Set<ResolvedArtifact> addedToIML = new HashSet<>()
     settings.dependenciesMap.each { scope, dependencySet ->
       ResolvedArtifactGraph graph = dependencyPlugin.resolve {
@@ -123,11 +127,11 @@ class IDEAPlugin extends BaseGroovyPlugin {
           } else {
             Node orderEntry = component.appendNode("orderEntry", appendScope(["type": "module-library"], scope))
             Node library = orderEntry.appendNode("library")
-            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, userHome)}!/"])
+            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, userHome, mavenRepository)}!/"])
             library.appendNode("JAVADOC")
             Node source = library.appendNode("SOURCES")
             if (destination.sourceFile != null) {
-              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, userHome)}!/"])
+              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, userHome, mavenRepository)}!/"])
             }
           }
 
@@ -137,15 +141,56 @@ class IDEAPlugin extends BaseGroovyPlugin {
     }
   }
 
-  private toRelativePATH(Path path, String userHome) {
+  /**
+   * See if a path setting to the maven repository exists on the machine
+   *
+   * @return The real (symlink-resolved) repository root, or null if mvn is unavailable or returns nothing.
+   */
+  private String resolveMavenRepository() {
+    def command = ["mvn", "help:evaluate",
+                   "-Dexpression=settings.localRepository",
+                   "-q", "-DforceStdout"]
+
+    def stdout = new StringBuilder()
+    def stderr = new StringBuilder()
+    try {
+      def process = command.execute(null, project.directory.toRealPath().toFile())
+      process.waitForProcessOutput(stdout, stderr)
+      if (process.exitValue() != 0) {
+        output.warning("mvn help:evaluate failed (exit ${process.exitValue()}), falling back to \$USER_HOME\$: ${stderr}")
+        return null
+      }
+      def repo = stdout.toString().trim()
+      if (!repo) {
+        return null
+      }
+      // Normalize the same way artifact paths are resolved (toRealPath), so the prefixes line up.
+      return Paths.get(repo).toRealPath().toString()
+    } catch (Exception e) {
+      output.warning("Could not invoke mvn, falling back to \$USER_HOME\$: ${e.message}")
+      return null
+    }
+  }
+
+  private toRelativePATH(Path path, String userHome, String mavenRepository = null) {
     def artifactRealPath = path.toRealPath().toString()
     def projectRealPath = project.directory.toRealPath().toString()
 
-    // Only perform a replace if the project path or user home are at the front of the real path
+    output.debugln("resolve: artifact=%s | repo=%s | matches=%s",
+            artifactRealPath, mavenRepository,
+            (mavenRepository && artifactRealPath.startsWith(mavenRepository)))
+
+    // Only perform a replace if the project path, Maven repository, or user home are at the front of the real path
     // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
+    // - Try the most-specific prefix first: MAVEN_REPOSITORY lives under USER_HOME, so it must win over USER_HOME
+    //   to match how IntelliJ collapses paths (longest-prefix match).
 
     if (artifactRealPath.startsWith(projectRealPath)) {
       artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
+    }
+
+    if (mavenRepository && artifactRealPath.startsWith(mavenRepository)) {
+      artifactRealPath = "\$MAVEN_REPOSITORY\$" + artifactRealPath.substring(mavenRepository.length())
     }
 
     if (artifactRealPath.startsWith(userHome)) {
