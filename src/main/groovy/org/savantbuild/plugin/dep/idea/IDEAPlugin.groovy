@@ -102,7 +102,8 @@ class IDEAPlugin extends BaseGroovyPlugin {
   }
 
   private void addDependencies(dependencyModuleMap, component) {
-    String mavenRepository = Paths.get(System.getProperty("user.home"), ".m2", "repository").toRealPath().toString()
+    String userHome = System.getProperty("user.home")
+    String mavenRepository = Paths.get(userHome, ".m2", "repository").toRealPath().toString()
     Set<ResolvedArtifact> addedToIML = new HashSet<>()
     settings.dependenciesMap.each { scope, dependencySet ->
       ResolvedArtifactGraph graph = dependencyPlugin.resolve {
@@ -124,11 +125,11 @@ class IDEAPlugin extends BaseGroovyPlugin {
           } else {
             Node orderEntry = component.appendNode("orderEntry", appendScope(["type": "module-library"], scope))
             Node library = orderEntry.appendNode("library")
-            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, mavenRepository)}!/"])
+            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, userHome, mavenRepository)}!/"])
             library.appendNode("JAVADOC")
             Node source = library.appendNode("SOURCES")
             if (destination.sourceFile != null) {
-              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, mavenRepository)}!/"])
+              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, userHome, mavenRepository)}!/"])
             }
           }
 
@@ -138,7 +139,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
     }
   }
 
-  private toRelativePATH(Path path, String mavenRepository) {
+  private toRelativePATH(Path path, String userHome, String mavenRepository) {
     def artifactRealPath = path.toRealPath().toString()
     def projectRealPath = project.directory.toRealPath().toString()
 
@@ -148,6 +149,10 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
     if (artifactRealPath.startsWith(mavenRepository)) {
       return "\$MAVEN_REPOSITORY\$" + artifactRealPath.substring(mavenRepository.length())
+    }
+
+    if (artifactRealPath.startsWith(userHome)) {
+      return "\$USER_HOME\$" + artifactRealPath.substring(userHome.length())
     }
 
     return artifactRealPath
