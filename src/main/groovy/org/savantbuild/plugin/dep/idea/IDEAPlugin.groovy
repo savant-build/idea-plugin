@@ -102,8 +102,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
   }
 
   private void addDependencies(dependencyModuleMap, component) {
-    String userHome = System.getProperty("user.home")
-    String mavenRepository = resolveMavenRepository()
+    String mavenRepository = Paths.get(System.getProperty("user.home"), ".m2", "repository").toRealPath().toString()
     Set<ResolvedArtifact> addedToIML = new HashSet<>()
     settings.dependenciesMap.each { scope, dependencySet ->
       ResolvedArtifactGraph graph = dependencyPlugin.resolve {
@@ -125,11 +124,11 @@ class IDEAPlugin extends BaseGroovyPlugin {
           } else {
             Node orderEntry = component.appendNode("orderEntry", appendScope(["type": "module-library"], scope))
             Node library = orderEntry.appendNode("library")
-            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, userHome, mavenRepository)}!/"])
+            library.appendNode("CLASSES").appendNode("root", [url: "jar://${toRelativePATH(destination.file, mavenRepository)}!/"])
             library.appendNode("JAVADOC")
             Node source = library.appendNode("SOURCES")
             if (destination.sourceFile != null) {
-              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, userHome, mavenRepository)}!/"])
+              source.appendNode("root", [url: "jar://${toRelativePATH(destination.sourceFile, mavenRepository)}!/"])
             }
           }
 
@@ -139,54 +138,16 @@ class IDEAPlugin extends BaseGroovyPlugin {
     }
   }
 
-  /**
-   * See if a path setting to the maven repository exists on the machine
-   *
-   * @return The real (symlink-resolved) repository root, or null if mvn is unavailable or returns nothing.
-   */
-  private String resolveMavenRepository() {
-    def command = ["mvn", "help:evaluate",
-                   "-Dexpression=settings.localRepository",
-                   "-q", "-DforceStdout"]
-
-    def stdout = new StringBuilder()
-    def stderr = new StringBuilder()
-    try {
-      def process = command.execute(null, project.directory.toRealPath().toFile())
-      process.waitForProcessOutput(stdout, stderr)
-      if (process.exitValue() != 0) {
-        output.warning("mvn help:evaluate failed (exit ${process.exitValue()}), falling back to \$USER_HOME\$: ${stderr}")
-        return null
-      }
-      def repo = stdout.toString().trim()
-      if (!repo) {
-        return null
-      }
-      // Normalize the same way artifact paths are resolved (toRealPath), so the prefixes line up.
-      return Paths.get(repo).toRealPath().toString()
-    } catch (Exception e) {
-      output.warning("Could not invoke mvn, falling back to \$USER_HOME\$: ${e.message}")
-      return null
-    }
-  }
-
-  private toRelativePATH(Path path, String userHome, String mavenRepository = null) {
+  private toRelativePATH(Path path, String mavenRepository) {
     def artifactRealPath = path.toRealPath().toString()
     def projectRealPath = project.directory.toRealPath().toString()
 
-    // Only perform a replace if the project path, Maven repository, or user home are at the front of the real path
-    // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
-
     if (artifactRealPath.startsWith(projectRealPath)) {
-      artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
+      return "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
     }
 
-    if (mavenRepository && artifactRealPath.startsWith(mavenRepository)) {
-      artifactRealPath = "\$MAVEN_REPOSITORY\$" + artifactRealPath.substring(mavenRepository.length())
-    }
-
-    if (artifactRealPath.startsWith(userHome)) {
-      artifactRealPath = "\$USER_HOME\$" + artifactRealPath.substring(userHome.length())
+    if (artifactRealPath.startsWith(mavenRepository)) {
+      return "\$MAVEN_REPOSITORY\$" + artifactRealPath.substring(mavenRepository.length())
     }
 
     return artifactRealPath
