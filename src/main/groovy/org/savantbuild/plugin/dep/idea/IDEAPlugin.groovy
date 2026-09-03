@@ -103,8 +103,6 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private void addDependencies(dependencyModuleMap, component) {
     String userHome = System.getProperty("user.home")
-    // Resolve the Maven local repository root ONCE per run. null when mvn is unavailable
-    // or returns nothing, in which case toRelativePATH falls back to $USER_HOME$.
     String mavenRepository = resolveMavenRepository()
     Set<ResolvedArtifact> addedToIML = new HashSet<>()
     settings.dependenciesMap.each { scope, dependencySet ->
@@ -176,14 +174,8 @@ class IDEAPlugin extends BaseGroovyPlugin {
     def artifactRealPath = path.toRealPath().toString()
     def projectRealPath = project.directory.toRealPath().toString()
 
-    output.debugln("resolve: artifact=%s | repo=%s | matches=%s",
-            artifactRealPath, mavenRepository,
-            (mavenRepository && artifactRealPath.startsWith(mavenRepository)))
-
     // Only perform a replace if the project path, Maven repository, or user home are at the front of the real path
     // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
-    // - Try the most-specific prefix first: MAVEN_REPOSITORY lives under USER_HOME, so it must win over USER_HOME
-    //   to match how IntelliJ collapses paths (longest-prefix match).
 
     if (artifactRealPath.startsWith(projectRealPath)) {
       artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
