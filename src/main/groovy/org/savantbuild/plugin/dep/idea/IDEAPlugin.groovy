@@ -32,7 +32,6 @@ import org.savantbuild.util.Graph
 
 import groovy.xml.XmlNodePrinter
 import groovy.xml.XmlParser
-import groovy.xml.XmlSlurper
 
 /**
  * IntelliJ IDEA plugin.
@@ -104,7 +103,7 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
   private void addDependencies(dependencyModuleMap, component) {
     String userHome = System.getProperty("user.home")
-    String mavenRepository = resolveMavenRepository(userHome)
+    String mavenRepository = Paths.get(userHome, ".m2", "repository").toString()
     Set<ResolvedArtifact> addedToIML = new HashSet<>()
     settings.dependenciesMap.each { scope, dependencySet ->
       ResolvedArtifactGraph graph = dependencyPlugin.resolve {
@@ -143,7 +142,6 @@ class IDEAPlugin extends BaseGroovyPlugin {
   private toRelativePATH(Path path, String userHome, String mavenRepository) {
     def artifactRealPath = path.toRealPath().toString()
     def projectRealPath = project.directory.toRealPath().toString()
-    output.infoln("path=[${path}] artifactRealPath=[${artifactRealPath}] projectRealPath=[${projectRealPath}] mavenRepository=[${mavenRepository}]")
 
     if (artifactRealPath.startsWith(projectRealPath)) {
       return "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
@@ -158,38 +156,6 @@ class IDEAPlugin extends BaseGroovyPlugin {
     }
 
     return artifactRealPath
-  }
-
-  private String resolveMavenRepository(String userHome) {
-    // User-level settings take priority
-    Path userSettingsPath = Paths.get(userHome, ".m2", "settings.xml")
-    String localRepo = parseLocalRepository(userSettingsPath)
-    if (localRepo) {
-      return Paths.get(localRepo).toRealPath().toString()
-    }
-
-    // Fall back to global Maven settings
-    String mavenHome = System.getenv("M2_HOME") ?: System.getenv("MAVEN_HOME")
-    if (mavenHome) {
-      Path globalSettingsPath = Paths.get(mavenHome, "conf", "settings.xml")
-      localRepo = parseLocalRepository(globalSettingsPath)
-      if (localRepo) {
-        return Paths.get(localRepo).toRealPath().toString()
-      }
-    }
-
-    return Paths.get(userHome, ".m2", "repository").toRealPath().toString()
-  }
-
-  private static String parseLocalRepository(Path settingsPath) {
-    if (settingsPath.toFile().exists()) {
-      def settings = new XmlSlurper().parse(settingsPath.toFile())
-      def localRepo = settings.localRepository?.text()?.trim()
-      if (localRepo) {
-        return localRepo
-      }
-    }
-    return null
   }
 
   private static Map<String, String> appendScope(Map<String, String> attributes, String scope) {
