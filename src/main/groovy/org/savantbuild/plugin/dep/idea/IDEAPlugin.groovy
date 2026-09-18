@@ -143,6 +143,9 @@ class IDEAPlugin extends BaseGroovyPlugin {
 
     // Only perform a replace if the project path or user home are at the front of the real path
     // - While unlikely, a path could repeat, and we only want to replace the prefix of the path
+    if (artifactRealPath.startsWith(userHome+"/.m2/repository")) {
+      artifactRealPath = "\$MAVEN_REPOSITORY\$" + artifactRealPath.substring("\$USER_HOME\$/.m2/repository/".length())
+    }
 
     if (artifactRealPath.startsWith(projectRealPath)) {
       artifactRealPath = "\$MODULE_DIR\$" + artifactRealPath.substring(projectRealPath.length())
